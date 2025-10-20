@@ -18,7 +18,9 @@ services:
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge
     ports:
-      - "1433:1433"
+      - "51433:1433"
+    volumes:
+      - ./data/mssql-data:/var/opt/mssql/data
     environment:
       - SA_PASSWORD=@someThingComplicated1234
       - ACCEPT_EULA=Y
