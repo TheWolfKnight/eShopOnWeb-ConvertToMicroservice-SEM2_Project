@@ -1,0 +1,10 @@
+networks:
+    catalog-microservice:
+        driver: bridge
+
+services:
+    catalog-service:
+        build:
+            dockerfile: ./CatalogMicroservice.Service/Dockerfile
+            context: .
+            no_cache: true
