@@ -127,6 +127,9 @@ END;
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -163,6 +166,9 @@ WHERE C.Id = @itemId
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -219,6 +225,9 @@ SELECT TOP (@{nameof(pageSize)}) * FROM [ROW]
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -277,6 +286,9 @@ INSERT INTO [Catalog]([Name], [Description], Price, PictureUri, CatalogTypeId, C
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -319,6 +331,9 @@ WHERE Id = @{nameof(CatalogItem.Id)}
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -357,6 +372,9 @@ WHERE Id = @{nameof(itemId)}
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;

@@ -126,6 +126,9 @@ END;
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -154,6 +157,9 @@ WHERE B.Id = @{nameof(brandId)}
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -196,6 +202,9 @@ SELECT B.Id, B.Brand FROM [CatalogBrands] B
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
