@@ -15,9 +15,9 @@ internal class CatalogBrandRepository: ICatalogBrandRepository
     private readonly string _connectionString;
     private readonly ILogger<CatalogBrandRepository> _logger;
 
-    public CatalogBrandRepository(IKeyedServiceProvider keyedServiceProvider, ILogger<CatalogBrandRepository> logger)
+    public CatalogBrandRepository(IServiceProvider serviceProvider, ILogger<CatalogBrandRepository> logger)
     {
-        string? connectionString = keyedServiceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
+        string? connectionString = serviceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
         if (connectionString is null)
             throw new InvalidOperationException("Could not create CatalogBrandRepository due to missing connection string");
 

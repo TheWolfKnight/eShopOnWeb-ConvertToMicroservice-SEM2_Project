@@ -3,11 +3,13 @@ networks:
     driver: bridge
 
 services:
-  catalog-service:
+  catalog-api:
     build:
       dockerfile: ./src/Microservices/CatalogMicroservice/CatalogMicroservice.API/Dockerfile
       context: ../../../
       no_cache: true
+    ports:
+     - "52080:8080"
     networks:
      - catalog-microservice
     environment:
@@ -18,7 +20,7 @@ services:
     ports:
      - "52433:1433"
     volumes:
-      - ./data/mssql-data:/var/opt/mssql/data
+     - ./data/mssql-data:/var/opt/mssql/data
     environment:
      - SA_PASSWORD=@sineThingComplicated1234
      - ACCEPT_EULA=Y

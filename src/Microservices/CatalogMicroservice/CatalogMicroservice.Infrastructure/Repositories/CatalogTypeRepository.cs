@@ -15,9 +15,9 @@ internal class CatalogTypeRepository: ICatalogTypeRepository
     private readonly string _connectionString;
     private readonly ILogger _logger;
 
-    public CatalogTypeRepository(IKeyedServiceProvider keyedServiceProvider, ILogger<CatalogBrandRepository> logger)
+    public CatalogTypeRepository(IServiceProvider serviceProvider, ILogger<CatalogBrandRepository> logger)
     {
-        string? connectionString = keyedServiceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
+        string? connectionString = serviceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
         if (connectionString is null)
             throw new InvalidOperationException("Could not create CatalogTypeRepository due to missing connection string");
 

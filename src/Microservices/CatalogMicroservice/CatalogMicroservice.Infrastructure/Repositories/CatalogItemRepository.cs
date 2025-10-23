@@ -15,9 +15,9 @@ internal class CatalogItemRepository: ICatalogItemRepository
     private readonly string _connectionString;
     private readonly ILogger<CatalogItemRepository> _logger;
 
-    public CatalogItemRepository(IKeyedServiceProvider keyedServiceProvider, ILogger<CatalogItemRepository> logger)
+    public CatalogItemRepository(IServiceProvider serviceProvider, ILogger<CatalogItemRepository> logger)
     {
-        string? connectionString = keyedServiceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
+        string? connectionString = serviceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
 
         if (connectionString is null)
             throw new InvalidOperationException("Could not create CatalogItemRepository due to missing connection string");
