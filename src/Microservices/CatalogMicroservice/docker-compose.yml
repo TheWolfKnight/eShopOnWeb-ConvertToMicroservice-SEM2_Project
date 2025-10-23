@@ -1,10 +1,26 @@
 networks:
-    catalog-microservice:
-        driver: bridge
+  catalog-microservice:
+    driver: bridge
 
 services:
-    catalog-service:
-        build:
-            dockerfile: ./CatalogMicroservice.Service/Dockerfile
-            context: .
-            no_cache: true
+  catalog-service:
+    build:
+      dockerfile: ./src/Microservices/CatalogMicroservice/CatalogMicroservice.API/Dockerfile
+      context: ../../../
+      no_cache: true
+    networks:
+     - catalog-microservice
+    environment:
+     - SQL_CONNECTION_STRING=Data Source=catalog-sqlserver;Integrated Security=false;User ID=sa;Password=@sineThingComplicated1234;Encrypt=false;TrustServerCertificate=true;
+
+  catalog-sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge
+    ports:
+     - "52433:1433"
+    volumes:
+      - ./data/mssql-data:/var/opt/mssql/data
+    environment:
+     - SA_PASSWORD=@sineThingComplicated1234
+     - ACCEPT_EULA=Y
+    networks:
+     - catalog-microservice
