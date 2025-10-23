@@ -1,25 +1,25 @@
 using System.Data;
 using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Interfaces;
 using Microservice.Catalog.Infrastructure.Helpers;
+using Microservice.Catalog.Infrastructure.Interfaces;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microservice.Catalog.Infrastructure.Repositories;
 
-internal class CatalogBrandRepository: ICatalogBrandRepository
+internal class CatalogTypeRepository: ICatalogTypeRepository
 {
-    internal const string CONNECTION_STRING_KEY = "catalog-brand";
+    internal const string CONNECTION_STRING_KEY = "catalog-type";
 
     private readonly string _connectionString;
-    private readonly ILogger<CatalogBrandRepository> _logger;
+    private readonly ILogger _logger;
 
-    public CatalogBrandRepository(IKeyedServiceProvider keyedServiceProvider, ILogger<CatalogBrandRepository> logger)
+    public CatalogTypeRepository(IKeyedServiceProvider keyedServiceProvider, ILogger<CatalogBrandRepository> logger)
     {
         string? connectionString = keyedServiceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
         if (connectionString is null)
-            throw new InvalidOperationException("Could not create CatalogBrandRepository due to missing connection string");
+            throw new InvalidOperationException("Could not create CatalogTypeRepository due to missing connection string");
 
         _connectionString = connectionString;
         _logger = logger;
@@ -143,14 +143,12 @@ END;
             throw e;
         }
     }
-
-    public async Task<CatalogBrand?> GetBrandByIdAsync(int brandId, CancellationToken cancellationToken = default)
+    public async Task<CatalogType?> GetCatalogTypeAsync(int typeId, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
-SELECT B.Id B.Brand FROM [CatalogBrands] B
-WHERE B.Id = @{nameof(brandId)}
+SELECT T.Id, T.[Type] from [CatalogTypes] T
+WHERE T.Id = @{nameof(typeId)}
 ";
-
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
@@ -158,39 +156,39 @@ WHERE B.Id = @{nameof(brandId)}
 
             command.CommandText = sqlString;
 
-            command.AddParameterValue($"@{nameof(brandId)}", SqlDbType.Int, brandId);
+            command.AddParameterValue($"@{nameof(typeId)}", SqlDbType.Int, typeId);
 
             SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
-            CatalogBrand? result = null;
+            CatalogType? type = null;
 
             if (await reader.ReadAsync(cancellationToken))
             {
                 int i = 0;
-                result = new CatalogBrand
+                type = new CatalogType
                 {
                     Id = reader.GetInt32(i++),
-                    Brand = reader.GetString(i++)
+                    Type = reader.GetString(i++)
                 };
             }
 
-            return result;
+            return type;
         }
         catch (Exception e)
         {
             _logger.LogError(
                 e,
-                "Could not fetch catalog brand with id = {BrandId} due to internal error",
-                brandId
+                "Could not fetch catalog type with id = {TypeId} due to internal error",
+                typeId
             );
 
             throw e;
         }
     }
 
-    public async Task<IEnumerable<CatalogBrand>> GetBrandsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync(CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
-SELECT B.Id, B.Brand FROM [CatalogBrands] B
+SELECT T.Id, T.[Type] from [CatalogTypes]
 ";
 
         try
@@ -199,19 +197,18 @@ SELECT B.Id, B.Brand FROM [CatalogBrands] B
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
-            List<CatalogBrand> result = [];
-
             SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+
+            List<CatalogType> result = [];
             while (await reader.ReadAsync(cancellationToken))
             {
                 int i = 0;
-                CatalogBrand brand = new CatalogBrand
+                CatalogType type = new CatalogType
                 {
                     Id = reader.GetInt32(i++),
-                    Brand = reader.GetString(i++)
+                    Type = reader.GetString(i++)
                 };
-
-                result.Add(brand);
+                result.Add(type);
             }
 
             return result;
@@ -220,11 +217,10 @@ SELECT B.Id, B.Brand FROM [CatalogBrands] B
         {
             _logger.LogError(
                 e,
-                "Could not fetch catalog brands due to internal error"
+                "Could not fetch catalog types due to internal error"
             );
 
             throw e;
         }
     }
 }
-
