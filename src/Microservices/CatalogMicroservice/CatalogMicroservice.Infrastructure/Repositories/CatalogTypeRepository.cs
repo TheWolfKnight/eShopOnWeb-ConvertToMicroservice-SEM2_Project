@@ -126,6 +126,9 @@ END;
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -152,6 +155,9 @@ WHERE T.Id = @{nameof(typeId)}
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
@@ -194,6 +200,9 @@ SELECT T.Id, T.[Type] from [CatalogTypes]
         try
         {
             await using SqlConnection connection = new SqlConnection(_connectionString);
+            if (connection.State is ConnectionState.Closed)
+                await connection.OpenAsync(cancellationToken);
+
             using SqlCommand command = connection.CreateCommand();
 
             command.CommandText = sqlString;
