@@ -1,4 +1,4 @@
-using Microservice.Catalog.Infrastructure.Interfaces;
+﻿using Microservice.Catalog.Infrastructure.Interfaces;
 using Microservice.Catalog.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
