@@ -28,11 +28,7 @@ internal class CatalogItemRepository: ICatalogItemRepository
 
     public async Task EnsureDbExistsAsync(CancellationToken cancellationToken = default)
     {
-        string sqlString = @"
-DECLARE @insertBrands INT = 0;
-DECLARE @insertTypes INT = 0;
-DECLARE @insertCatalog INT = 0;
-
+        string ensureTable = @"
 IF (DB_ID('CatalogDatabase') IS NOT NULL)
 BEGIN
     PRINT 'Database ""CatalogDatabase"" exists';
@@ -40,6 +36,12 @@ END
 ELSE BEGIN
     CREATE DATABASE [CatalogDatabase];
 END;
+";
+
+        string ensureData = @"
+DECLARE @insertBrands INT = 0;
+DECLARE @insertTypes INT = 0;
+DECLARE @insertCatalog INT = 0;
 
 USE [CatalogDatabase];
 
@@ -50,7 +52,7 @@ END
 ELSE BEGIN
     CREATE TABLE [CatalogBrands] (
         Id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
-        Brand NVARCHAR(100) NOT NULL,
+        Brand NVARCHAR(100) NOT NULL
     );
     SET @insertBrands = 1;
 END;
@@ -122,7 +124,7 @@ BEGIN
             ('Cup<T> Sheet','Cup<T> Sheet',8.50,'http://catalogbaseurltobereplaced/images/products/11.png',3,2),
             ('Prism White TShirt','Prism White TShirt',12.00,'http://catalogbaseurltobereplaced/images/products/12.png',2,5);
 END;
-""";
+";
 
         try
         {
@@ -130,10 +132,13 @@ END;
             if (connection.State is ConnectionState.Closed)
                 await connection.OpenAsync(cancellationToken);
 
-            using SqlCommand command = connection.CreateCommand();
+            using SqlCommand createTable = connection.CreateCommand();
+            createTable.CommandText = ensureTable;
+            await createTable.ExecuteNonQueryAsync(cancellationToken);
 
-            command.CommandText = sqlString;
-            await command.ExecuteNonQueryAsync(cancellationToken);
+            using SqlCommand createData = connection.CreateCommand();
+            createData.CommandText = ensureData;
+            await createData.ExecuteNonQueryAsync(cancellationToken);
 
             return;
         }
