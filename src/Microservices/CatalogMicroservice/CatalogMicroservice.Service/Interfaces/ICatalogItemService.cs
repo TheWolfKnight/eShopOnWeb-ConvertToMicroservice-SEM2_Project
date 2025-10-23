@@ -12,7 +12,7 @@ public interface ICatalogItemService
     Task<IEnumerable<CatalogItem>> GetItemsAsync(int pageIndex, int pageSize, int? brandId, int? typeId, CancellationToken token = default);
     Task<CatalogItem> GetItemAsync(int id, CancellationToken token = default);
 
-    Task<(bool ok, int? id, string? error)> CreateItemAsync(CreateCatalogItem create, CancellationToken token = default);
-    Task<(bool ok, string? error)>          UpdateItemAsync(CatalogItem update, CancellationToken token = default);
-    Task<(bool ok, string? error)>          DeleteItemAsync(int id, CancellationToken token = default);
+    Task<bool> CreateItemAsync(CreateCatalogItem create, CancellationToken token = default);
+    Task<bool> UpdateItemAsync(CatalogItem update, CancellationToken token = default);
+    Task<bool> DeleteItemAsync(int id, CancellationToken token = default);
 }

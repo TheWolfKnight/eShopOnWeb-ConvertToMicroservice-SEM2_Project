@@ -38,24 +38,24 @@ internal class CatalogItemService : ICatalogItemService
         return await itemRepo.GetItemAsync(id, token);
     }
 
-    public async Task<(bool ok, int? id, string? error)> CreateItemAsync(CreateCatalogItem item, CancellationToken token = default)
+    public async Task<bool> CreateItemAsync(CreateCatalogItem item, CancellationToken token = default)
     {
         var brand = await brandRepo.GetBrandByIdAsync(item.CatalogBrandId, token);
         var type  = await typeRepo.GetCatalogTypeAsync(item.CatalogTypeId, token);
-        if (brand is null || type is null) { return (false, null, "Unknown brandId/typeID"); }
+        if (brand is null || type is null) { return false; }
 
         var created = await itemRepo.CreateItemAsync(item, token);
-        return (true, created.Id, null);
+        return true;
     }
 
-    public async Task<(bool ok, string? error)> UpdateItemAsync(CatalogItem updateItem, CancellationToken token = default)
+    public async Task<bool> UpdateItemAsync(CatalogItem updateItem, CancellationToken token = default)
     {
         var existing = await itemRepo.GetItemAsync(updateItem.Id, token);
-        if (existing is null) { return (false, "Item Not Found"); }
+        if (existing is null) { return false; }
 
         var brand = await brandRepo.GetBrandByIdAsync(updateItem.CatalogBrandId, token);
         var type  = await typeRepo.GetCatalogTypeAsync(updateItem.CatalogTypeId, token);
-        if (brand is null || type is null) { return (false, "Unknown brandId/typeId"); }
+        if (brand is null || type is null) { return false; }
 
         existing.Name           = updateItem.Name;
         existing.Description    = updateItem.Description;
@@ -65,15 +65,15 @@ internal class CatalogItemService : ICatalogItemService
         existing.CatalogTypeId  = updateItem.CatalogTypeId;
 
         await itemRepo.UpdateItemAsync(existing, token);
-        return (true, null);
+        return true;
     }
 
-    public async Task<(bool ok, string? error)> DeleteItemAsync(int id, CancellationToken token = default)
+    public async Task<bool> DeleteItemAsync(int id, CancellationToken token = default)
     {
         var exists = await itemRepo.GetItemAsync(id, token);
-        if (exists is null) { return (false, "Item Not Found"); }
+        if (exists is null) { return false; }
 
         await itemRepo.DeleteItemAsync(id, token);
-        return (true, null);
+        return (true);
     }
 }
