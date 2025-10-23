@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -40,10 +41,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorShared", "src\BlazorShared\BlazorShared.csproj", "{715CF7AF-A1EE-40A6-94A0-8DA3F3B2CAE9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublicApiIntegrationTests", "tests\PublicApiIntegrationTests\PublicApiIntegrationTests.csproj", "{D53EF010-8F8C-4337-A059-456E19D8AE63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Catalog.Item", "src\Microservice.Catalog.Item\Microservice.Catalog.Item.csproj", "{F51B3100-1D93-45F3-80EC-8BA2EC1513E6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Catalog.Service", "src\Microservice.Catalog.Service\Microservice.Catalog.Service.csproj", "{157B03B3-C08D-4593-B541-2CEF2E8E3888}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{B012DF45-78EC-4E2B-A00A-7EE3CA5B7F2C}"
 EndProject
@@ -123,14 +120,6 @@ Global
 		{DF2A62FE-886D-48D1-AB22-4FAF262C210B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF2A62FE-886D-48D1-AB22-4FAF262C210B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF2A62FE-886D-48D1-AB22-4FAF262C210B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F51B3100-1D93-45F3-80EC-8BA2EC1513E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F51B3100-1D93-45F3-80EC-8BA2EC1513E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F51B3100-1D93-45F3-80EC-8BA2EC1513E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F51B3100-1D93-45F3-80EC-8BA2EC1513E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{157B03B3-C08D-4593-B541-2CEF2E8E3888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{157B03B3-C08D-4593-B541-2CEF2E8E3888}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{157B03B3-C08D-4593-B541-2CEF2E8E3888}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{157B03B3-C08D-4593-B541-2CEF2E8E3888}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
