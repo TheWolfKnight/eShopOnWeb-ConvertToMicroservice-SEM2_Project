@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CatalogMicroservice.Service.Interfaces;
-using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Interfaces;
+﻿using CatalogMicroservice.Service.Interfaces;
+using CatalogMicroservice.Common.Models;
+using CatalogMicroservice.Infrastructure.Interfaces;
 
 namespace CatalogMicroservice.Service.Service;
 
 public class CatalogTypeService : ICatalogTypeService
 {
-    private readonly ICatalogTypeRepository? typeRepo;
+    private readonly ICatalogTypeRepository _typeRepository;
 
-    public CatalogTypeService(ICatalogTypeRepository? typeRepo)
+    public CatalogTypeService(ICatalogTypeRepository typeRepository)
     {
-        this.typeRepo = typeRepo;
+        _typeRepository = typeRepository;
     }
 
-    public async Task<CatalogType> GetCatalogTypeAsync(int typeId, CancellationToken token = default)
+    public async Task<CatalogType?> GetCatalogTypeAsync(int typeId, CancellationToken token = default)
     {
-        var type = await typeRepo.GetCatalogTypeAsync(typeId, token);
+        CatalogType? type = await _typeRepository.GetCatalogTypeAsync(typeId, token);
         return type;
     }
 
     public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync(CancellationToken token = default)
     {
-        var types = await typeRepo.GetCatalogTypesAsync(token);
+        IEnumerable<CatalogType> types = await _typeRepository.GetCatalogTypesAsync(token);
         return types;
     }
 }

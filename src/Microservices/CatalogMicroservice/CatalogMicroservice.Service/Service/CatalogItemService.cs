@@ -1,61 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CatalogMicroservice.Service.Interfaces;
-using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Interfaces;
+﻿using CatalogMicroservice.Service.Interfaces;
+using CatalogMicroservice.Common.Models;
+using CatalogMicroservice.Infrastructure.Interfaces;
 
 namespace CatalogMicroservice.Service;
 
 internal class CatalogItemService : ICatalogItemService
 {
-    private readonly ICatalogItemRepository? itemRepo;
-    private readonly ICatalogBrandService? brandRepo;
-    private readonly ICatalogTypeService? typeRepo;
+    private readonly ICatalogItemRepository _itemRepository;
+    private readonly ICatalogBrandService _brandService;
+    private readonly ICatalogTypeService _typeService;
 
     public CatalogItemService(
-        ICatalogItemRepository? itemRepo, ICatalogBrandService? brandRepo, ICatalogTypeService? typeRepo)
+        ICatalogItemRepository itemRepository, ICatalogBrandService brandService, ICatalogTypeService typeService)
     {
-        this.itemRepo = itemRepo;
-        this.brandRepo = brandRepo;
-        this.typeRepo = typeRepo;
+        _itemRepository = itemRepository;
+        _brandService = brandService;
+        _typeService = typeService;
     }
 
     public async Task<IEnumerable<CatalogItem>> GetItemsAsync(int pageIndex, int pageSize, int? brandId, int? typeId, CancellationToken token = default)
     {
-        if (pageIndex < 0) { pageIndex = 0; }
+        if (pageIndex < 1) { pageIndex = 1; }
         if (pageSize <= 0) { pageSize = 10; }
 
-        var page = await itemRepo.GetItemPageAsync(pageIndex, pageSize, brandId, typeId, token);
+        IEnumerable<CatalogItem> page = await _itemRepository.GetItemPageAsync(pageIndex,
+            pageSize,
+            brandId,
+            typeId,
+            token
+        );
 
         return page;
     }
 
-    public async Task<CatalogItem> GetItemAsync(int id, CancellationToken token = default)
+    public async Task<CatalogItem?> GetItemAsync(int id, CancellationToken token = default)
     {
-        return await itemRepo.GetItemAsync(id, token);
+        CatalogItem? item =  await _itemRepository.GetItemAsync(id, token);
+        return item;
     }
 
-    public async Task<bool> CreateItemAsync(CreateCatalogItem item, CancellationToken token = default)
+    public async Task<CatalogItem?> CreateItemAsync(CreateCatalogItem item, CancellationToken token = default)
     {
-        var brand = await brandRepo.GetBrandByIdAsync(item.CatalogBrandId, token);
-        var type  = await typeRepo.GetCatalogTypeAsync(item.CatalogTypeId, token);
-        if (brand is null || type is null) { return false; }
+        CatalogBrand brand = await _brandService.GetBrandByIdAsync(item.CatalogBrandId, token);
+        CatalogType type  = await _typeService.GetCatalogTypeAsync(item.CatalogTypeId, token);
 
-        var created = await itemRepo.CreateItemAsync(item, token);
-        return true;
+        if (brand is null || type is null)
+            return null;
+
+        CatalogItem created = await _itemRepository.CreateItemAsync(item, token);
+        return created;
     }
 
     public async Task<bool> UpdateItemAsync(CatalogItem updateItem, CancellationToken token = default)
     {
-        var existing = await itemRepo.GetItemAsync(updateItem.Id, token);
-        if (existing is null) { return false; }
+        CatalogItem? existing = await _itemRepository.GetItemAsync(updateItem.Id, token);
+        if (existing is null)
+            return false;
 
-        var brand = await brandRepo.GetBrandByIdAsync(updateItem.CatalogBrandId, token);
-        var type  = await typeRepo.GetCatalogTypeAsync(updateItem.CatalogTypeId, token);
-        if (brand is null || type is null) { return false; }
+        CatalogBrand brand = await _brandService.GetBrandByIdAsync(updateItem.CatalogBrandId, token);
+        CatalogType type  = await _typeService.GetCatalogTypeAsync(updateItem.CatalogTypeId, token);
+        if (brand is null || type is null)
+            return false;
 
         existing.Name           = updateItem.Name;
         existing.Description    = updateItem.Description;
@@ -64,16 +69,17 @@ internal class CatalogItemService : ICatalogItemService
         existing.CatalogBrandId = updateItem.CatalogBrandId;
         existing.CatalogTypeId  = updateItem.CatalogTypeId;
 
-        await itemRepo.UpdateItemAsync(existing, token);
+        await _itemRepository.UpdateItemAsync(existing, token);
         return true;
     }
 
     public async Task<bool> DeleteItemAsync(int id, CancellationToken token = default)
     {
-        var exists = await itemRepo.GetItemAsync(id, token);
-        if (exists is null) { return false; }
+        var exists = await _itemRepository.GetItemAsync(id, token);
+        if (exists is null)
+            return false;
 
-        await itemRepo.DeleteItemAsync(id, token);
-        return (true);
+        await _itemRepository.DeleteItemAsync(id, token);
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 
-namespace Microservice.Catalog.Common.Models;
+namespace CatalogMicroservice.Common.Models;
 
 public class CatalogItem
 {

@@ -1,31 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CatalogMicroservice.Service.Interfaces;
-using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Interfaces;
+﻿using CatalogMicroservice.Service.Interfaces;
+using CatalogMicroservice.Common.Models;
+using CatalogMicroservice.Infrastructure.Interfaces;
 
 namespace CatalogMicroservice.Service.Service;
 public class CatalogBrandService : ICatalogBrandService
 {
-    private readonly ICatalogBrandRepository? brandRepo;
+    private readonly ICatalogBrandRepository _brandRepository;
 
-    public CatalogBrandService(ICatalogBrandRepository? brandRepo)
+    public CatalogBrandService(ICatalogBrandRepository brandRepository)
     {
-        this.brandRepo = brandRepo;
+        this._brandRepository = brandRepository;
     }
 
-    public Task<CatalogBrand> GetBrandByIdAsync(int brandId, CancellationToken cancellationToken = default)
+    public async Task<CatalogBrand?> GetBrandByIdAsync(int brandId, CancellationToken cancellationToken = default)
     {
-        var brand = GetBrandByIdAsync(brandId, cancellationToken);
+        CatalogBrand? brand = await _brandRepository.GetBrandByIdAsync(brandId, cancellationToken);
         return brand;
     }
 
     public async Task<IEnumerable<CatalogBrand>> GetBrandsAsync(CancellationToken token = default)
     {
-        var brands = await brandRepo.GetBrandsAsync(token);
+        IEnumerable<CatalogBrand> brands = await _brandRepository.GetBrandsAsync(token);
         return brands;
     }
 }

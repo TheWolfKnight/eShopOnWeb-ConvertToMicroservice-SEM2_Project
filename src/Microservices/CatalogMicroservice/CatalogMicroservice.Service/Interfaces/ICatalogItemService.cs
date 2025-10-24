@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microservice.Catalog.Common.Models;
+﻿using CatalogMicroservice.Common.Models;
 
 namespace CatalogMicroservice.Service.Interfaces;
 
 public interface ICatalogItemService
 {
     Task<IEnumerable<CatalogItem>> GetItemsAsync(int pageIndex, int pageSize, int? brandId, int? typeId, CancellationToken token = default);
-    Task<CatalogItem> GetItemAsync(int id, CancellationToken token = default);
+    Task<CatalogItem?> GetItemAsync(int id, CancellationToken token = default);
 
-    Task<bool> CreateItemAsync(CreateCatalogItem create, CancellationToken token = default);
+    Task<CatalogItem?> CreateItemAsync(CreateCatalogItem create, CancellationToken token = default);
     Task<bool> UpdateItemAsync(CatalogItem update, CancellationToken token = default);
     Task<bool> DeleteItemAsync(int id, CancellationToken token = default);
 }

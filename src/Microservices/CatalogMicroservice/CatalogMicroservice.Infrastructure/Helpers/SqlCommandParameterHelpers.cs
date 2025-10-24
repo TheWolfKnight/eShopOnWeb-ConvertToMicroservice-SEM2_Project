@@ -1,7 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace Microservice.Catalog.Infrastructure.Helpers;
+namespace CatalogMicroservice.Infrastructure.Helpers;
 
 public static class SqlCommandParameterHelpers
 {

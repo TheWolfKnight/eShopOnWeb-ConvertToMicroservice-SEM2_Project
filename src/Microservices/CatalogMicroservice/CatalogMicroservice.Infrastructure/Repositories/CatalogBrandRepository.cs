@@ -1,12 +1,12 @@
 using System.Data;
-using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Interfaces;
-using Microservice.Catalog.Infrastructure.Helpers;
+using CatalogMicroservice.Common.Models;
+using CatalogMicroservice.Infrastructure.Interfaces;
+using CatalogMicroservice.Infrastructure.Helpers;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microservice.Catalog.Infrastructure.Repositories;
+namespace CatalogMicroservice.Infrastructure.Repositories;
 
 internal class CatalogBrandRepository: ICatalogBrandRepository
 {

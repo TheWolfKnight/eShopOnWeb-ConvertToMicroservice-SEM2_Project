@@ -1,12 +1,12 @@
 using System.Data;
-using Microservice.Catalog.Common.Models;
-using Microservice.Catalog.Infrastructure.Helpers;
-using Microservice.Catalog.Infrastructure.Interfaces;
+using CatalogMicroservice.Common.Models;
+using CatalogMicroservice.Infrastructure.Helpers;
+using CatalogMicroservice.Infrastructure.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microservice.Catalog.Infrastructure.Repositories;
+namespace CatalogMicroservice.Infrastructure.Repositories;
 
 internal class CatalogItemRepository: ICatalogItemRepository
 {
@@ -279,6 +279,7 @@ SELECT TOP (@{nameof(pageSize)}) * FROM [ROW]
     {
         string sqlString = $@"
 INSERT INTO [Catalog]([Name], [Description], Price, PictureUri, CatalogTypeId, CatalogBrandId)
+OUTPUT INSERTED.Id
      VALUES (
         @{nameof(CreateCatalogItem.Name)},
         @{nameof(CreateCatalogItem.Description)},
@@ -305,9 +306,22 @@ INSERT INTO [Catalog]([Name], [Description], Price, PictureUri, CatalogTypeId, C
             command.AddParameterValue($"@{nameof(CreateCatalogItem.CatalogTypeId)}", SqlDbType.Int, item.CatalogTypeId);
             command.AddParameterValue($"@{nameof(CreateCatalogItem.CatalogBrandId)}", SqlDbType.Int, item.CatalogBrandId);
 
-            await command.ExecuteNonQueryAsync(cancellationToken);
+            //NOTE: execute scalar returns the first column of the first rown, which is set to be
+            //      the inserted items id.
+            int insertedId = (int)await command.ExecuteScalarAsync(cancellationToken);
 
-            return null;
+            CatalogItem newItem = new CatalogItem
+            {
+                Id = insertedId,
+                Name = item.Name,
+                Description = item.Description,
+                Price = item.Price,
+                PictureUri = item.PictureUri,
+                CatalogTypeId = item.CatalogTypeId,
+                CatalogBrandId = item.CatalogBrandId
+            };
+
+            return newItem;
         }
         catch (Exception e)
         {

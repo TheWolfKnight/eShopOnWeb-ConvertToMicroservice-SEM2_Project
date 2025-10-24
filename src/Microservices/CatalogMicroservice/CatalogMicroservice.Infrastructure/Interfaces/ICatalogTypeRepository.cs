@@ -1,6 +1,6 @@
-using Microservice.Catalog.Common.Models;
+using CatalogMicroservice.Common.Models;
 
-namespace Microservice.Catalog.Infrastructure.Interfaces;
+namespace CatalogMicroservice.Infrastructure.Interfaces;
 
 public interface ICatalogTypeRepository
 {

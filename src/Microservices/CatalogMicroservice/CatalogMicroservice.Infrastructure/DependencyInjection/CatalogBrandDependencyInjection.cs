@@ -1,8 +1,8 @@
-using Microservice.Catalog.Infrastructure.Interfaces;
-using Microservice.Catalog.Infrastructure.Repositories;
+using CatalogMicroservice.Infrastructure.Interfaces;
+using CatalogMicroservice.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microservice.Catalog.Infrastructure.DependencyInjection;
+namespace CatalogMicroservice.Infrastructure.DependencyInjection;
 
 public static class CatalogBrandDependencyInjection
 {
