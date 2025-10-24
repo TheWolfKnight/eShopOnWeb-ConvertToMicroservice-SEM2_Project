@@ -35,7 +35,12 @@ builder.Services.AddLogging();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+var shouldShowSwagger = Environment.GetEnvironmentVariable(
+    "SHOULD_SHOW_SWAGGER",
+    EnvironmentVariableTarget.Process
+) ?? "";
+
+if (app.Environment.IsDevelopment() || shouldShowSwagger is "true")
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
