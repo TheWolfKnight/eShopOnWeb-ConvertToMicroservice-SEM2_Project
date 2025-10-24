@@ -11,39 +11,46 @@ namespace CatalogMicroservice.Infrastructure.Repositories;
 internal class CatalogItemRepository: ICatalogItemRepository
 {
     internal const string CONNECTION_STRING_KEY = "catalog-repository";
+    internal const string DATABASE_NAME_KEY = "catalog-repository-db-name";
 
     private readonly string _connectionString;
+    private readonly string _databaseName;
     private readonly ILogger<CatalogItemRepository> _logger;
 
     public CatalogItemRepository(IServiceProvider serviceProvider, ILogger<CatalogItemRepository> logger)
     {
         string? connectionString = serviceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
+        string? databaseName = serviceProvider.GetKeyedService<string>(DATABASE_NAME_KEY);
 
         if (connectionString is null)
             throw new InvalidOperationException("Could not create CatalogItemRepository due to missing connection string");
+        if (databaseName is null)
+            throw new InvalidOperationException("Could not create CatalogItemRepository due to missing database name");
+
         _connectionString = connectionString;
+        _databaseName = databaseName;
 
         _logger = logger;
     }
 
     public async Task EnsureDbExistsAsync(CancellationToken cancellationToken = default)
     {
-        string ensureTable = @"
-IF (DB_ID('CatalogDatabase') IS NOT NULL)
+        string ensureTable = $@"
+IF (DB_ID('{_databaseName}') IS NOT NULL)
 BEGIN
-    PRINT 'Database ""CatalogDatabase"" exists';
+    PRINT 'Database ""{_databaseName}"" exists';
 END
 ELSE BEGIN
-    CREATE DATABASE [CatalogDatabase];
+    CREATE DATABASE [{_databaseName}];
 END;
 ";
 
-        string ensureData = @"
+        string ensureData = $@"
 DECLARE @insertBrands INT = 0;
 DECLARE @insertTypes INT = 0;
 DECLARE @insertCatalog INT = 0;
 
-USE [CatalogDatabase];
+USE [{_databaseName}];
 
 IF (OBJECT_ID('CatalogBrands') IS NOT NULL)
 BEGIN
@@ -80,8 +87,8 @@ ELSE BEGIN
         [Description] VARCHAR(MAX),
         Price DECIMAL(18, 2) NOT NULL,
         PictureUri VARCHAR(MAX) NOT NULL,
-        CatalogTypeId INT NOT NULL,
-        CatalogBrandId INT NOT NULL
+        CatalogTypeId INT NOT NULL REFERENCES CatalogTypes(Id),
+        CatalogBrandId INT NOT NULL REFERENCES CatalogBrands(Id)
     );
     SET @insertCatalog = 1;
 END;
@@ -156,6 +163,8 @@ END;
     public async Task<CatalogItem?> GetItemAsync(int itemId, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 SELECT
     C.Id,
     C.[Name],
@@ -165,7 +174,7 @@ SELECT
     C.CatalogBrandId,
     C.CatalogTypeId
 FROM [Catalog] C
-WHERE C.Id = @itemId
+WHERE C.Id = @itemId;
         ";
 
         try
@@ -215,6 +224,8 @@ WHERE C.Id = @itemId
     public async Task<IEnumerable<CatalogItem>> GetItemPageAsync(int pageNo, int pageSize, int? brandId, int? typeId, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 WITH [ROW] AS (
     SELECT * FROM [Catalog]
     WHERE (CatalogBrandId = @{nameof(brandId)} OR @{nameof(brandId)} IS NULL)
@@ -224,7 +235,7 @@ WITH [ROW] AS (
     WHERE (CatalogBrandId = @{nameof(brandId)} OR @{nameof(brandId)} IS NULL)
     and (CatalogTypeId = @{nameof(typeId)} OR @{nameof(typeId)} IS NULL)
 )
-SELECT TOP (@{nameof(pageSize)}) * FROM [ROW]
+SELECT TOP (@{nameof(pageSize)}) * FROM [ROW];
 ";
 
         try
@@ -237,10 +248,10 @@ SELECT TOP (@{nameof(pageSize)}) * FROM [ROW]
 
             command.CommandText = sqlString;
 
-            command.AddParameterValue($"@{nameof(pageNo)}", SqlDbType.Int, pageNo);
-            command.AddParameterValue($"@{nameof(pageSize)}", SqlDbType.Int, pageSize);
-            command.AddParameterValue($"@{nameof(brandId)}", SqlDbType.Int, brandId);
-            command.AddParameterValue($"@{nameof(typeId)}", SqlDbType.Int, typeId);
+            command.Parameters.AddWithValue($"@{nameof(pageNo)}", pageNo);
+            command.Parameters.AddWithValue($"@{nameof(pageSize)}", pageSize);
+            command.Parameters.AddWithValue($"@{nameof(brandId)}", brandId is null ? DBNull.Value : brandId);
+            command.Parameters.AddWithValue($"@{nameof(typeId)}", typeId is null ? DBNull.Value : typeId);
 
             List<CatalogItem> items = [];
             SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -278,6 +289,8 @@ SELECT TOP (@{nameof(pageSize)}) * FROM [ROW]
     public async Task<CatalogItem> CreateItemAsync(CreateCatalogItem item, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 INSERT INTO [Catalog]([Name], [Description], Price, PictureUri, CatalogTypeId, CatalogBrandId)
 OUTPUT INSERTED.Id
      VALUES (
@@ -287,7 +300,7 @@ OUTPUT INSERTED.Id
         @{nameof(CreateCatalogItem.PictureUri)}
         @{nameof(CreateCatalogItem.CatalogTypeId)},
         @{nameof(CreateCatalogItem.CatalogBrandId)}
-    )
+    );
 ";
         try
         {
@@ -337,6 +350,8 @@ OUTPUT INSERTED.Id
     public async Task UpdateItemAsync(CatalogItem item, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 UPDATE [Catalog]
 SET [Name] = @{nameof(CatalogItem.Name)},
     [Description] = @{nameof(CatalogItem.Description)},
@@ -344,7 +359,7 @@ SET [Name] = @{nameof(CatalogItem.Name)},
     PictureUri = @{nameof(CatalogItem.PictureUri)},
     CatalogBrandId = @{nameof(CatalogItem.CatalogBrandId)},
     CatalogTypeId = @{nameof(CatalogItem.CatalogTypeId)}
-WHERE Id = @{nameof(CatalogItem.Id)}
+WHERE Id = @{nameof(CatalogItem.Id)};
 ";
 
         try
@@ -384,8 +399,10 @@ WHERE Id = @{nameof(CatalogItem.Id)}
     public async Task DeleteItemAsync(int itemId, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 DELETE FROM [Catalog]
-WHERE Id = @{nameof(itemId)}
+WHERE Id = @{nameof(itemId)};
 ";
 
         try

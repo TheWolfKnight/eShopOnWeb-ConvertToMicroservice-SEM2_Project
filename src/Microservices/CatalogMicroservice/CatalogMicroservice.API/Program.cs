@@ -27,9 +27,14 @@ var connectionString = Environment.GetEnvironmentVariable(
     EnvironmentVariableTarget.Process
 ) ?? "";
 
-builder.Services.AddCatalogBrandRepository(connectionString);
-builder.Services.AddCatalogItemRepository(connectionString);
-builder.Services.AddCatalogTypeRepository(connectionString);
+var databaseName = Environment.GetEnvironmentVariable(
+    "SQL_DATABASE_NAME",
+    EnvironmentVariableTarget.Process
+) ?? "";
+
+builder.Services.AddCatalogBrandRepository(connectionString, databaseName);
+builder.Services.AddCatalogItemRepository(connectionString, databaseName);
+builder.Services.AddCatalogTypeRepository(connectionString, databaseName);
 
 builder.Services.AddLogging();
 

@@ -11,25 +11,35 @@ namespace CatalogMicroservice.Infrastructure.Repositories;
 internal class CatalogTypeRepository: ICatalogTypeRepository
 {
     internal const string CONNECTION_STRING_KEY = "catalog-type";
+    internal const string DATABASE_NAME_KEY = "catalog-type-db-name";
 
     private readonly string _connectionString;
+    private readonly string _databaseName;
     private readonly ILogger _logger;
 
     public CatalogTypeRepository(IServiceProvider serviceProvider, ILogger<CatalogBrandRepository> logger)
     {
         string? connectionString = serviceProvider.GetKeyedService<string>(CONNECTION_STRING_KEY);
+        string? databaseName = serviceProvider.GetKeyedService<string>(DATABASE_NAME_KEY);
+
         if (connectionString is null)
             throw new InvalidOperationException("Could not create CatalogTypeRepository due to missing connection string");
+        if (databaseName is null)
+            throw new InvalidOperationException("Could not create CatalogTypeRepository due to missing database name");
 
         _connectionString = connectionString;
+        _databaseName = databaseName;
+
         _logger = logger;
     }
 
     public async Task<CatalogType?> GetCatalogTypeAsync(int typeId, CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
+USE [{_databaseName}];
+
 SELECT T.Id, T.[Type] from [CatalogTypes] T
-WHERE T.Id = @{nameof(typeId)}
+WHERE T.Id = @{nameof(typeId)};
 ";
         try
         {
@@ -73,7 +83,9 @@ WHERE T.Id = @{nameof(typeId)}
     public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync(CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
-SELECT T.Id, T.[Type] from [CatalogTypes]
+USE [@{_databaseName}];
+
+SELECT T.Id, T.[Type] from [CatalogTypes];
 ";
 
         try
