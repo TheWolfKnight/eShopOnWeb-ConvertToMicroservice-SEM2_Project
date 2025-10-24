@@ -83,7 +83,7 @@ WHERE T.Id = @{nameof(typeId)};
     public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync(CancellationToken cancellationToken = default)
     {
         string sqlString = $@"
-USE [@{_databaseName}];
+USE [{_databaseName}];
 
 SELECT T.Id, T.[Type] from [CatalogTypes];
 ";

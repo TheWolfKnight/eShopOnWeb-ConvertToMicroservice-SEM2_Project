@@ -5,21 +5,21 @@ using CatalogMicroservice.Common.Models;
 namespace CatalogMicroservice.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class BrandsController : ControllerBase
+[Route("api/catalog")]
+public class CatalogBrandsController : ControllerBase
 {
     private readonly ICatalogBrandRepository _repository;
 
-    public BrandsController(ICatalogBrandRepository repository) => _repository = repository;
+    public CatalogBrandsController(ICatalogBrandRepository repository) => _repository = repository;
 
-    [HttpGet]
+    [HttpGet("brand")]
     public async Task<ActionResult<IEnumerable<CatalogBrand>>> GetAll(CancellationToken ct)
     {
         var brands = await _repository.GetBrandsAsync(ct);
         return Ok(brands);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("brand/{id:int}")]
     public async Task<ActionResult<CatalogBrand>> GetById(int id, CancellationToken ct)
     {
         var brand = await _repository.GetBrandByIdAsync(id, ct);

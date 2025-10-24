@@ -5,14 +5,14 @@ using CatalogMicroservice.Common.Models;
 namespace CatalogMicroservice.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class ItemsController : ControllerBase
+[Route("api/catalog")]
+public class CatalogItemController : ControllerBase
 {
     private readonly ICatalogItemRepository _repository;
 
-    public ItemsController(ICatalogItemRepository repository) => _repository = repository;
+    public CatalogItemController(ICatalogItemRepository repository) => _repository = repository;
 
-    [HttpGet]
+    [HttpGet("item/page")]
     public async Task<ActionResult<IEnumerable<CatalogItem>>> GetPage(
         // en ide til at lave pagination og filtrering, her fra starten, skal nok ændres ERH
         [FromQuery] int pageNo = 1,
@@ -27,14 +27,14 @@ public class ItemsController : ControllerBase
         return Ok(items);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("item/{id:int}")]
     public async Task<ActionResult<CatalogItem>> GetById(int id, CancellationToken ct)
     {
         var item = await _repository.GetItemAsync(id, ct);
         return item is null ? NotFound() : Ok(item);
     }
 
-    [HttpPost]
+    [HttpPost("item")]
     public async Task<ActionResult<CatalogItem>> Create([FromBody] CreateCatalogItem dto, CancellationToken ct)
     {
         if (dto is null) return BadRequest("Body mangler.");
@@ -43,7 +43,7 @@ public class ItemsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("item/{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] CatalogItem model, CancellationToken ct)
     {
         if (model is null || model.Id != id)
@@ -56,7 +56,7 @@ public class ItemsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("item/{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var existing = await _repository.GetItemAsync(id, ct);
