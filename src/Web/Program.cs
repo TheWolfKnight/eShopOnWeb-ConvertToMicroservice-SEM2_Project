@@ -95,6 +95,10 @@ builder.Services.Configure<ServiceConfig>(config =>
 
 // blazor configuration
 var configSection = builder.Configuration.GetRequiredSection(BaseUrlConfiguration.CONFIG_NAME);
+
+foreach (var config in configSection.AsEnumerable())
+    Console.WriteLine($"{config.Key}: {config.Value}");
+
 builder.Services.Configure<BaseUrlConfiguration>(configSection);
 var baseUrlConfig = configSection.Get<BaseUrlConfiguration>();
 
