@@ -6,7 +6,7 @@ on:
       - '**'
   pull_request:
     branches:
-      - master    # din default branch ser ud til at hedde master
+      - master   
 
 jobs:
   build-and-test:
@@ -19,8 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          # Installer seneste .NET 9 SDK (9.0.x)
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Show SDKs (debug)
         run: dotnet --list-sdks
@@ -52,7 +51,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Show SDKs (debug)
         run: dotnet --list-sdks
