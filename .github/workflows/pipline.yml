@@ -19,8 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          # .NET 9 SDK kan bygge både net8 og net9 projekter
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.100'
 
       - name: Restore
         run: dotnet restore eShopOnWeb.sln
@@ -49,7 +48,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.100'
 
       - name: Restore
         run: dotnet restore eShopOnWeb.sln
