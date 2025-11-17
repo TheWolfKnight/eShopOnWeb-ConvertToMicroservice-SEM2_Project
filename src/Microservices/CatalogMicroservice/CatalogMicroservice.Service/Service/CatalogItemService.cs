@@ -4,7 +4,7 @@ using CatalogMicroservice.Infrastructure.Interfaces;
 
 namespace CatalogMicroservice.Service;
 
-internal class CatalogItemService : ICatalogItemService
+public class CatalogItemService : ICatalogItemService
 {
     private readonly ICatalogItemRepository _itemRepository;
     private readonly ICatalogBrandService _brandService;
